@@ -59,3 +59,4 @@ _import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
 environment = SubResource( 1 )
 
 
+[editable path="char"]
