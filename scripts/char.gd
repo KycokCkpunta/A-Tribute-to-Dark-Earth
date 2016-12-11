@@ -1,6 +1,8 @@
 extends KinematicBody2D
 onready var anim = get_node("anim")
 onready var tex = get_node("tex")
+onready var weapon_sys = get_node("weapon_sys")
+onready var weapon = get_node("weapon_sys/cur_weapon")
 
 var cur_anim = "idle"
 var new_anim = "idle"
@@ -39,10 +41,11 @@ func anim():
 func look():
 	if get_viewport().get_mouse_pos().x > get_viewport_rect().size.x/2:
 		tex.set_scale(Vector2(1,1))
+		weapon_sys.set_scale(Vector2(1,1))
 	elif get_viewport().get_mouse_pos().x < get_viewport_rect().size.x/2:
 		tex.set_scale(Vector2(-1,1))
+		weapon_sys.set_scale(Vector2(-1,1))
 	if get_viewport().get_mouse_pos().y < get_viewport_rect().size.y/2:
-		tex.get_node("weapon").set_z(-2)
+		weapon.set_z(-2)
 	elif get_viewport().get_mouse_pos().y > get_viewport_rect().size.y/2:
-		tex.get_node("weapon").set_z(0)
-	tex.get_node("weapon").look_at(get_viewport().get_mouse_pos()-get_viewport_rect().size/2+get_node("Camera2D").get_camera_pos())
+		weapon.set_z(0)
