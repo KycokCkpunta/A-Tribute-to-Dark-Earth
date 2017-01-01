@@ -30,6 +30,13 @@ func _fixed_process(delta):
 	
 	move(vec)
 	
+	var slide_attempts = 4
+	while(is_colliding() and slide_attempts > 0):
+		vec = get_collision_normal().slide(vec)
+		vec = move(vec)
+		slide_attempts -= 1
+	
+	
 	anim()
 	look()
 

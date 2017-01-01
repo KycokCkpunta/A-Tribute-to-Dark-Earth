@@ -1,15 +1,32 @@
-[gd_scene load_steps=4 format=1]
+[gd_scene load_steps=7 format=1]
 
 [ext_resource path="res://art/weapons/bull.png" type="Texture" id=1]
 [ext_resource path="res://scripts/projectile.gd" type="Script" id=2]
 
-[sub_resource type="RectangleShape2D" id=1]
+[sub_resource type="CanvasItemShader" id=1]
+
+_code = { "fragment":"uniform float outline_width=2.0;\nuniform color outline_color=vec4(0,0,0,1);\n\nvec4 col = tex(TEXTURE,UV);\nvec2 ps = TEXTURE_PIXEL_SIZE;\nfloat a;\nfloat maxa=col.a;\nfloat mina=col.a;\na=tex(TEXTURE,UV+vec2(0,-outline_width)*ps).a;\nmaxa=max(a,maxa); \nmina=min(a,mina);\na=tex(TEXTURE,UV+vec2(0,outline_width)*ps).a;\nmaxa=max(a,maxa); \nmina=min(a,mina);\na=tex(TEXTURE,UV+vec2(-outline_width,0)*ps).a;\nmaxa=max(a,maxa); \nmina=min(a,mina);\na=tex(TEXTURE,UV+vec2(outline_width,0)*ps).a;\nmaxa=max(a,maxa); \nmina=min(a,mina);\n\nCOLOR=mix(col,outline_color,maxa-mina);", "fragment_ofs":0, "light":"", "light_ofs":0, "vertex":"", "vertex_ofs":0 }
+
+[sub_resource type="CanvasItemMaterial" id=2]
+
+shader/shader = SubResource( 1 )
+shader/shading_mode = 0
+shader_param/outline_width = 0.2
+shader_param/outline_color = Color( 0, 0, 0, 1 )
+
+[sub_resource type="RectangleShape2D" id=3]
 
 custom_solver_bias = 0.0
 extents = Vector2( 1, 1 )
 
+[sub_resource type="ColorRamp" id=4]
+
+offsets = FloatArray( 0, 0.994152 )
+colors = ColorArray( 0.625, 0.55088, 0.297852, 1, 0, 0, 0, 0 )
+
 [node name="bull#1" type="Sprite"]
 
+material/material = SubResource( 2 )
 transform/pos = Vector2( -1, 0 )
 texture = ExtResource( 1 )
 offset = Vector2( 1, 0 )
@@ -18,7 +35,7 @@ script/script = ExtResource( 2 )
 [node name="Area2D" type="Area2D" parent="."]
 
 input/pickable = true
-shapes/0/shape = SubResource( 1 )
+shapes/0/shape = SubResource( 3 )
 shapes/0/transform = Matrix32( 0.5, 0, 0, 1, 0.5, 0 )
 shapes/0/trigger = false
 gravity_vec = Vector2( 0, 1 )
@@ -30,14 +47,50 @@ angular_damp = 1.0
 
 transform/pos = Vector2( 0.5, 0 )
 transform/scale = Vector2( 0.5, 1 )
-shape = SubResource( 1 )
+shape = SubResource( 3 )
 trigger = false
 _update_shape_index = 0
 
 [node name="ft" type="Position2D" parent="."]
 
-transform/pos = Vector2( 0, 3 )
+transform/pos = Vector2( 0, 1 )
+
+[node name="Particles2D" type="Particles2D" parent="."]
+
+transform/scale = Vector2( 1, -1 )
+z/relative = false
+config/amount = 8
+config/lifetime = 0.1
+config/emit_timeout = 0.1
+config/emitting = false
+config/explosiveness = 0.5
+params/direction = 0.0
+params/spread = 25.0
+params/linear_velocity = 100.0
+params/spin_velocity = 0.0
+params/orbit_velocity = 0.0
+params/gravity_direction = 0.0
+params/gravity_strength = 0.0
+params/radial_accel = 0.0
+params/tangential_accel = 0.0
+params/damping = 0.0
+params/initial_angle = 0.0
+params/initial_size = 1.0
+params/final_size = 1.0
+params/hue_variation = 0.0
+params/anim_speed_scale = 1.0
+params/anim_initial_pos = 0.0
+color/color_ramp = SubResource( 4 )
+
+[node name="Timer" type="Timer" parent="."]
+
+process_mode = 1
+wait_time = 0.3
+one_shot = false
+autostart = false
 
 [connection signal="body_enter" from="Area2D" to="." method="_on_Area2D_body_enter"]
+
+[connection signal="timeout" from="Timer" to="." method="_on_Timer_timeout"]
 
 
